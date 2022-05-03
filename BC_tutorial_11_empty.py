@@ -36,8 +36,8 @@ img = cv2.imread(img_file)
 width, height, channels = img.shape
 
 # TODO Compute fx, fy, cx, cy using sensor size information 
-sensor_width_mm = 6.4
-sensor_height_mm = 4.8
+sensor_width_mm = 23.5
+sensor_height_mm = 15.6
 fx = width * focalLength_mm / sensor_width_mm
 fy = height * focalLength_mm / sensor_height_mm
 cx = width / 2.0
