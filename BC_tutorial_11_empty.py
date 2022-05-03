@@ -12,7 +12,7 @@ def _derationalize(rational):
     return numerator / denominator
 
 # TODO Open an jpg image file in order to read out the exif data
-img_file = 'images/OnePlus7.jpg'
+img_file = 'Fuji/DSCF7164.JPG'
 f = open(img_file, 'rb')
 
 # TODO Get all Exif tags
