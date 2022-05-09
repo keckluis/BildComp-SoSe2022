@@ -6,10 +6,12 @@ import numpy as np
 # TODO Define  a function to compute a fraction given as string
 def _derationalize(rational):
     all = rational.split('/')
-    numerator = float(all[0])
-    denominator = float(all[1])
 
-    return numerator / denominator
+    if len(all) > 1:
+        numerator = float(all[0])
+        denominator = float(all[1])
+        return numerator / denominator
+    return float(rational)
 
 # TODO Open an jpg image file in order to read out the exif data
 img_file = 'Fuji/DSCF7164.JPG'
@@ -35,7 +37,7 @@ img = cv2.imread(img_file)
 # TODO Extract image resolution
 width, height, channels = img.shape
 
-# TODO Compute fx, fy, cx, cy using sensor size information 
+# TODO Compute fx, fy, cx, cy using sensor size information
 sensor_width_mm = 23.5
 sensor_height_mm = 15.6
 fx = width * focalLength_mm / sensor_width_mm
