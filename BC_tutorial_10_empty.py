@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 
 # TODO Reading the left and right images.
+<<<<<<< HEAD
 img_left = cv2.imread('images/tsukuba01.jpg')
 img_right = cv2.imread('images/tsukuba02.jpg')
 
@@ -45,3 +46,18 @@ cv2.imshow("right image", img_left)
 # TODO Display the disparity map
 cv2.imshow("disparity", disp)
 cv2.waitKey(0)
+=======
+
+
+# TODO Set parameters needed for stereo matching
+
+
+# TODO Create a stereo computation object using StereoBM_create or StereoSGBM_create
+
+# TODO Calculate disparity using the chosen stereo algorithm
+
+
+# TODO Normalize the disparity map in order to display it
+
+# TODO Display the disparity map
+>>>>>>> 59a7c87fc9f45ce608c0f771e6eb36d1e8fb94aa

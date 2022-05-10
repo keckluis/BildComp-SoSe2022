@@ -6,6 +6,7 @@ import numpy as np
 
 # load image
 img = cv2.imread('images/table_bottle_01.jpg', cv2.IMREAD_COLOR)
+
 height, width, _ = img.shape
 
 

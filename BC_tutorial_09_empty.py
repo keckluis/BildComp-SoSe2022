@@ -1,13 +1,14 @@
 # load an image and find vanishing points
+import operator
 import cv2
 import numpy as np
 
-window_name = 'window'
-window = cv2.namedWindow(window_name, cv2.WINDOW_FREERATIO)
-
+# load image
 img = cv2.imread('images/table_bottle_01.jpg', cv2.IMREAD_COLOR)
 height, width, _ = img.shape
 
+window_name = "window"
+# Compute intersection position using the cross product of two lines
 def getIntersectionPosition(line1, line2):
     intersection = np.cross(line1, line2)
     intersection = intersection/intersection[2]
