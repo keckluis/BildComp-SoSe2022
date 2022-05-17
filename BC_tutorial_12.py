@@ -10,9 +10,12 @@ img1 = cv2.imread('images/tsukuba01.jpg', 0)  # queryimage # left image
 img2 = cv2.imread('images/tsukuba02.jpg', 0)  # trainimage # right image
 title = 'window'
 cv2.namedWindow(title, cv2.WINDOW_GUI_NORMAL)
+cv2.imshow(title, np.concatenate((img1, img2), axis=1))
+cv2.waitKey(0)
+
 
 # find the keypoints and descriptors using SIFT_create
-sift = cv2.SIFT_create()
+sift = cv2.SIFT_create(nfeatures=500)
 kp1, des1 = sift.detectAndCompute(img1, None)
 kp2, des2 = sift.detectAndCompute(img2, None)
 print('We found %d keypoints in the left image.' % len(kp1))
@@ -27,10 +30,17 @@ imgSift2 = cv2.drawKeypoints(
 
 cv2.imshow(title, np.concatenate((imgSift1, imgSift2), axis=1))
 cv2.waitKey(0)
+imgSift = cv2.drawKeypoints(
+    img2, kp2, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+cv2.imshow(title, imgSift)
+cv2.waitKey(0)
 
 # match the keypoints using a FlannBasedMatcher
 FLANN_INDEX_KDTREE = 1
+# see https://docs.opencv.org/4.5.5/db/d18/classcv_1_1flann_1_1GenericIndex.html#details
+# and https://en.wikipedia.org/wiki/K-d_tree
 index_params = dict(algorithm=FLANN_INDEX_KDTREE, trees=5)
+# see https://github.com/opencv/opencv/blob/4.x/modules/flann/include/opencv2/flann/params.h (l.60 ff)
 search_params = dict(checks=50)
 flann = cv2.FlannBasedMatcher(index_params, search_params)
 matches = flann.knnMatch(des1, des2, k=2)
@@ -50,6 +60,19 @@ pts1 = np.int32(pts1)
 pts2 = np.int32(pts2)
 assert(len(pts1) == len(pts2))
 print('We found %d matching keypoints in both images.' % len(pts1))
+
+# Draw the keypoint matches between both pictures
+# Based on: https://docs.opencv2.org/master/dc/dc3/tutorial_py_matcher.html
+draw_params = dict(matchColor=(0, 255, 0),
+                   singlePointColor=(255, 0, 0),
+                   matchesMask=matchesMask,
+                   flags=cv2.DrawMatchesFlags_DEFAULT)
+
+keypoint_matches = cv2.drawMatchesKnn(
+    img1, kp1, img2, kp2, matches, None, **draw_params)
+cv2.namedWindow(title, cv2.WINDOW_GUI_NORMAL)
+cv2.imshow(title, keypoint_matches)
+cv2.waitKey(0)
 
 # Now we compute the fundamental matrix
 F, mask = cv2.findFundamentalMat(pts1, pts2, cv2.FM_RANSAC)
