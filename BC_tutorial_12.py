@@ -1,14 +1,13 @@
 # Code adapted from https://docs.opencv2.org/4.5.5/da/de9/tutorial_py_epipolar_geometry.html
 # and https://www.andreasjakl.com/understand-and-apply-stereo-rectification-for-depth-maps-part-2/
 import cv2
-from cv2 import waitKey
 import numpy as np
 
 
 # load left and right images
-img1 = cv2.imread('images/tsukuba01.jpg', 0)  # queryimage # left image
-img2 = cv2.imread('images/tsukuba02.jpg', 0)  # trainimage # right image
-title = 'window'
+img1 = cv2.imread('images/table_left.jpg', 0)  # queryimage # left image
+img2 = cv2.imread('images/table_right.jpg', 0)  # trainimage # right image
+title = 'Bildverarbeitung und Computergrafik'
 cv2.namedWindow(title, cv2.WINDOW_GUI_NORMAL)
 cv2.imshow(title, np.concatenate((img1, img2), axis=1))
 cv2.waitKey(0)
@@ -21,14 +20,10 @@ kp2, des2 = sift.detectAndCompute(img2, None)
 print('We found %d keypoints in the left image.' % len(kp1))
 print('We found %d keypoints in the right image.' % len(kp2))
 print('Each SIFT keypoint is described with a %s-dimensional array' % des1.shape[1])
-
 # Visualize the SIFT keypoints
-imgSift1 = cv2.drawKeypoints(
+imgSift = cv2.drawKeypoints(
     img1, kp1, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-imgSift2 = cv2.drawKeypoints(
-    img2, kp2, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
-
-cv2.imshow(title, np.concatenate((imgSift1, imgSift2), axis=1))
+cv2.imshow(title, imgSift)
 cv2.waitKey(0)
 imgSift = cv2.drawKeypoints(
     img2, kp2, None, flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
@@ -119,51 +114,3 @@ lines2 = lines2.reshape(-1, 3)
 img3, img4 = drawlines(img2, img1, lines2, pts2, pts1)
 cv2.imshow(title, np.concatenate((img3, img5), axis=1))
 cv2.waitKey(0)
-
-# https://www.andreasjakl.com/understand-and-apply-stereo-rectification-for-depth-maps-part-2/
-h1, w1 = img1.shape
-h2, w2 = img2.shape
-_, H1, H2 = cv2.stereoRectifyUncalibrated(np.float32(pts1), np.float32(pts2), F, imgSize=(w1, h1))
-
-img1_rectified = cv2.warpPerspective(img1, H1, (w1, h1))
-img2_rectified = cv2.warpPerspective(img2, H2, (w2, h2))
-cv2.imshow(title, np.concatenate((img1_rectified, img2_rectified), axis=1))
-cv2.waitKey(0)
-
-# Matched block size. It must be an odd number >=1 . Normally, it should be somewhere in the 3..11 range.
-block_size = 11
-min_disp = -16      
-max_disp = 16
-# Maximum disparity minus minimum disparity. The value is always greater than zero.
-# In the current implementation, this parameter must be divisible by 16.
-num_disp = max_disp - min_disp
-# Margin in percentage by which the best (minimum) computed cost function value should "win" the second best value to consider the found match correct.
-# Normally, a value within the 5-15 range is good enough
-uniquenessRatio = 1
-# Maximum size of smooth disparity regions to consider their noise speckles and invalidate.
-# Set it to 0 to disable speckle filtering. Otherwise, set it somewhere in the 50-200 range.
-speckleWindowSize = 200
-# Maximum disparity variation within each connected component.
-# If you do speckle filtering, set the parameter to a positive value, it will be implicitly multiplied by 16.
-# Normally, 1 or 2 is good enough.
-speckleRange = 2
-disp12MaxDiff = 0
-
-stereo = cv2.StereoSGBM_create(
-    minDisparity=min_disp,
-    numDisparities=num_disp,
-    blockSize=block_size,
-    uniquenessRatio=uniquenessRatio,
-    speckleWindowSize=speckleWindowSize,
-    speckleRange=speckleRange,
-    disp12MaxDiff=disp12MaxDiff,
-    P1=8 * 1 * block_size * block_size,
-    P2=32 * 1 * block_size * block_size,
-)
-disparity_SGBM = stereo.compute(img1_rectified, img2_rectified)
-
-# Normalize the values to a range from 0..255 for a grayscale image
-disparity_SGBM = cv2.normalize(disparity_SGBM, disparity_SGBM, alpha=255, beta=0, norm_type=cv2.NORM_MINMAX)
-disparity_SGBM = np.uint8(disparity_SGBM)
-cv2.imshow(title, disparity_SGBM)
-waitKey(0)
