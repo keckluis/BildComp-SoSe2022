@@ -4,7 +4,6 @@ import cv2
 from cv2 import waitKey
 import numpy as np
 
-
 # load left and right images
 img1 = cv2.imread('images/tsukuba01.jpg', 0)  # queryimage # left image
 img2 = cv2.imread('images/tsukuba02.jpg', 0)  # trainimage # right image
@@ -15,8 +14,8 @@ cv2.namedWindow(title, cv2.WINDOW_GUI_NORMAL)
 sift = cv2.SIFT_create()
 kp1, des1 = sift.detectAndCompute(img1, None)
 kp2, des2 = sift.detectAndCompute(img2, None)
-print('We found %d keypoints in the left image.' % len(kp1))
-print('We found %d keypoints in the right image.' % len(kp2))
+print('Found %d keypoints in the left image.' % len(kp1))
+print('Found %d keypoints in the right image.' % len(kp2))
 print('Each SIFT keypoint is described with a %s-dimensional array' % des1.shape[1])
 
 # Visualize the SIFT keypoints
@@ -49,7 +48,7 @@ for i, (m, n) in enumerate(matches):
 pts1 = np.int32(pts1)
 pts2 = np.int32(pts2)
 assert(len(pts1) == len(pts2))
-print('We found %d matching keypoints in both images.' % len(pts1))
+print('Found %d matching keypoints in both images.' % len(pts1))
 
 # Now we compute the fundamental matrix
 F, mask = cv2.findFundamentalMat(pts1, pts2, cv2.FM_RANSAC)
@@ -108,18 +107,18 @@ cv2.imshow(title, np.concatenate((img1_rectified, img2_rectified), axis=1))
 cv2.waitKey(0)
 
 # Matched block size. It must be an odd number >=1 . Normally, it should be somewhere in the 3..11 range.
-block_size = 11
+block_size = 3
 min_disp = -16      
-max_disp = 16
+max_disp = 32
 # Maximum disparity minus minimum disparity. The value is always greater than zero.
 # In the current implementation, this parameter must be divisible by 16.
 num_disp = max_disp - min_disp
 # Margin in percentage by which the best (minimum) computed cost function value should "win" the second best value to consider the found match correct.
 # Normally, a value within the 5-15 range is good enough
-uniquenessRatio = 1
+uniquenessRatio = 5
 # Maximum size of smooth disparity regions to consider their noise speckles and invalidate.
 # Set it to 0 to disable speckle filtering. Otherwise, set it somewhere in the 50-200 range.
-speckleWindowSize = 200
+speckleWindowSize = 100
 # Maximum disparity variation within each connected component.
 # If you do speckle filtering, set the parameter to a positive value, it will be implicitly multiplied by 16.
 # Normally, 1 or 2 is good enough.
